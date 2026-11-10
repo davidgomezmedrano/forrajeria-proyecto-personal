@@ -1,0 +1,50 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum TipoPresentacion {
+  BOLSA
+  KILO
+  UNIDAD
+}
+
+model Proveedor {
+  id            Int        @id @default(autoincrement())
+  nombre        String     @unique
+  telefono      String?
+  notas         String?
+  creadoEn      DateTime   @default(now())
+  actualizadoEn DateTime   @updatedAt
+  productos     Producto[]
+}
+
+model Producto {
+  id             Int            @id @default(autoincrement())
+  nombre         String
+  categoria      String?
+  activo         Boolean        @default(true)
+  proveedorId    Int?
+  proveedor      Proveedor?     @relation(fields: [proveedorId], references: [id])
+  creadoEn       DateTime       @default(now())
+  actualizadoEn  DateTime       @updatedAt
+  presentaciones Presentacion[]
+}
+
+model Presentacion {
+  id            Int              @id @default(autoincrement())
+  productoId    Int
+  producto      Producto         @relation(fields: [productoId], references: [id])
+  tipo          TipoPresentacion
+  kg            Decimal?
+  precio        Decimal
+  costo         Decimal?
+  activa        Boolean          @default(true)
+  creadoEn      DateTime         @default(now())
+  actualizadoEn DateTime         @updatedAt
+}
